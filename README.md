@@ -6,9 +6,15 @@
 2. [Unsterschied Task und Value Task](#2-unsterschied-task-und-value-task) <br>
     2.1 [Unsterschied Task und Value Task Beispiel](#unsterschied-task-und-value-task-beispiel) <br>
     2.2 [Unsterschied Task und Value Task Erklärung](#unsterschied-task-und-value-task-erklärung) <br>
-3. [LocalStorage Blazor](#localstorage-beispiel) <br>
-    3.1 [LocalStorage Blazor Beispiel](#localstorage-beispiel) <br>
-    3.2 [LocalStorage Blazor Erklärung](#ternären-operator-erklärung) <br>
+3. [Was ist Blazor](#3-was-ist-blazor) <br>
+    3.1 [Blazor Erklärung](#blazor-erklärung) <br>
+    3.2 [Blazor Beispiel](#beispiel-einfacher-zähler-in-blazor) <br>
+4. [LocalStorage Blazor](#localstorage-beispiel) <br>
+    4.1 [LocalStorage Blazor Beispiel](#localstorage-beispiel) <br>
+    4.2 [LocalStorage Blazor Erklärung](#ternären-operator-erklärung) <br>
+5. [Blazor Statistik](#5-blazor-statistik) <br>
+    5.1 [Blazor Stastik Beisiel](#blazor-stastik-beisiel) <br>
+    5.2 [Blazor Statisk Erklärung](#blazor-statisk-erklärung) <br>
 
 ## 1. Ternären Operator
 
@@ -86,8 +92,40 @@ Der Hauptunterschied zwischen Task und ValueTask liegt darin, wie sie mit den Re
 
 In diesem Beispiel wird die CalculateAsync-Methode eine Task<int> zurückgeben, während die CalculateValueAsync-Methode eine ValueTask<int> zurückgibt. Beide Methoden haben ähnliche asynchrone Verhaltensweisen, aber ValueTask wird bevorzugt, wenn die Methode in der Regel synchron beendet wird oder bereits abgeschlossen ist, um unnötige Speicherzuweisungen zu vermeiden.
 
+## 3 Was ist Blazor
 
-## 3. LocalStorage 
+### Blazor Erklärung
+
+Blazor ist ein Open-Source-Framework von Microsoft, das die Entwicklung von interaktiven Webanwendungen mithilfe von C# ermöglicht. Es gibt zwei Hauptvarianten:
+
+1. Clientseitiges Blazor (WebAssembly): C#-Code wird in WebAssembly übersetzt, um Webanwendungen im Browser auszuführen.
+
+2. Serverseitiges Blazor: Hier läuft die Anwendungslogik auf dem Server, während die Benutzeroberfläche im Browser gerendert wird.
+
+### Beispiel: Einfacher Zähler in Blazor
+
+```csharp
+@page "/counter"
+
+<h3>Counter</h3>
+
+<p>Current count: @count</p>
+<button class="btn btn-primary" @onclick="IncrementCounter">Increment</button>
+
+@code {
+    private int count = 0;
+
+    private void IncrementCounter()
+    {
+        count++;
+    }
+}
+````
+
+Dieses Beispiel zeigt eine Blazor-Komponente, die einen Zähler darstellt. Der Zählerwert wird angezeigt, und ein Klick auf den "Increment"-Button erhöht den Wert. Blazor ermöglicht die Verwendung von C# für die Entwicklung von Webanwendungen, sei es clientseitig oder serverseitig.
+
+
+## 4. LocalStorage 
 
 ### LocalStorage Beispiel:
 
@@ -180,3 +218,61 @@ SaveToLocalStorage: Ruft die SetItemAsync-Methode des LocalStorageService auf, u
 LoadFromLocalStorage: Ruft die GetItemAsync-Methode des LocalStorageService auf, um einen Wert aus dem LocalStorage abzurufen und in der savedValue-Variable zu speichern.
 Der Wert von savedValue wird in der Ansicht angezeigt, wenn er nicht leer ist.
 In diesem Beispiel wurde ein Service erstellt, um den Zugriff auf den LocalStorage in Blazor zu abstrahieren. Die Blazor-Komponente selbst interagiert nur mit dem Service und ist somit unabhängig von den Details der JavaScript-Interoperabilität. Dies fördert eine saubere Trennung der Verantwortlichkeiten und verbessert die Wartbarkeit des Codes.
+
+## 5. Blazor Statistik 
+
+### Blazor Stastik Beisiel
+
+```csharp
+
+<div class="col-12 col-xxl-12">
+    <!-- Title and Dropdown -->
+    <RadzenText TextStyle="TextStyle.H6" Class="rz-color-primary">
+        <RadzenIcon Icon="show_chart" /> @CustomText.NewCars
+    </RadzenText>
+    <RadzenDropDown @bind-Value="selectedCategory" Data="@CarCategories" 
+    Change="@(() => ChangeCategory(selectedCategory))" TextProperty="Name" ValueProperty="Name" />
+
+    <!-- Chart -->
+    <RadzenChart @ref="chart">
+        @if (CarStatistic.Count == 0)
+        {
+            InitCarStatistic(selectedCategory);
+        }
+        @if (CarStatistic.Count > 0)
+        {
+            @foreach (var car in CarStatistic)
+            {
+                <!-- Column Series for Cars -->
+                <RadzenColumnSeries Data=@car.Value 
+                Title="@car.Key" CategoryProperty="Car" ValueProperty="Leads">
+                    <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                </RadzenColumnSeries>
+                
+                <!-- Column Options -->
+                <RadzenColumnOptions Width="20" />
+
+                <!-- Category Axis -->
+                <RadzenCategoryAxis Padding="0" StrokeWidth="2">
+                    <RadzenGridLines Visible="true" />
+                </RadzenCategoryAxis>
+
+                <!-- Value Axis -->
+                <RadzenValueAxis Min="0">
+                    <RadzenGridLines Visible="true" />
+                    <RadzenAxisTitle Text=@CustomText.Leads />
+                </RadzenValueAxis>
+            }
+        }
+    </RadzenChart>
+</div>
+```
+
+### Blazor Statisk Erklärung
+
+In diesem Beispiel wurde die Methode InitCarStatistic hinzugefügt, um die Initialisierung der Statistikdaten zu übernehmen. Diese Methode wird aufgerufen, wenn noch keine Statistikdaten für die ausgewählte Kategorie vorhanden sind.
+
+Die Methode InitCarStatistic nutzt die übergebene Kategorie, um die entsprechenden Daten auszuwählen und die Statistikdaten für die Anzeige vorzubereiten. Dies geschieht anstelle des direkt im HTML-Code eingefügten Logikblocks. Dadurch bleibt der HTML-Code übersichtlicher und die Logik ist in einer separaten Methode organisiert.
+
+Bitte beachte, dass die Methodenimplementierung und die Datenstrukturen (wie MvCategory, MvCar, InterestCategorie, etc.) in deinem C#-Code bereitgestellt werden müssen. Diese werde ich nicht zeigen weil ich nicht Firmengeheimnisse preisgeben will.
+
